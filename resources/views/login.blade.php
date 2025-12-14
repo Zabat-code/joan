@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr. Joan - Sistema Médico</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
@@ -91,6 +93,21 @@
             right: 8%;
             animation: pulse-slow 8s ease-in-out infinite 1.5s;
         }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.2);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
     </style>
 </head>
 
@@ -140,17 +157,12 @@
     </div>
 
     <!-- Contenido principal -->
-    <div class="min-h-screen flex items-center justify-center px-4 py-12 relative z-10">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12 relative z-10" x-data="loginForm()">
         <div class="max-w-md w-full">
             <!-- Logo médico -->
             <div class="text-center mb-8">
-                <div
-                    class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-600 to-red-600 rounded-full shadow-2xl mb-4">
-                    <svg class="w-10 h-10 text-white animate-pulse" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+                <div class="logo-container mx-auto mb-4">
+                    <img src="{{ asset('img/logo.png') }}" alt="Dr. Joan Logo">
                 </div>
                 <h2 class="text-3xl font-bold text-gray-900 mb-2">
                     Dr. Joan
@@ -161,36 +173,24 @@
             </div>
 
             <!-- Formulario -->
-            <div x-data="{ loading: false }"  class="bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-emerald-100">
-                <form id="loginForm" @submit.prevent="submitLogin" method="POST" action="{{ route('login') }}"
-                    class="space-y-6">
-
-                    <x-loading :show="loading" message="Validando tus credenciales..." spinner="medical"
-                        size="large" />
-
+            <div class="bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-emerald-100">
+                <form  @submit.prevent="submitLogin" class=" space-y-6 bg-white   rounded-lg shadow-md"   >
                     @csrf
-
-                    <!-- Errores -->
-                    @if ($errors->any())
-                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-red-800 mb-1">Error de autenticación</p>
-                                    <ul class="text-sm text-red-700 space-y-1">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+                    <div x-show="errorMessage" x-transition class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-800 mb-1">Error de autenticación</p>
+                                <p class="text-sm text-red-700" x-text="errorMessage"></p>
                             </div>
                         </div>
-                    @endif
+                    </div>
+
 
                     <!-- Usuario -->
                     <div>
@@ -206,11 +206,13 @@
                                 </svg>
                             </div>
                             <input id="email" name="email" type="email" required value="{{ old('email') }}"
-                                class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-gray-50 hover:bg-white"
+                                x-bind:disabled="loading"
+                                x-model="formData.email"
+                                class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-gray-50 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="doctor@hospital.com">
                         </div>
                         @error('email')
-                            <p class="mt-1.5 text-sm text-emerald-600 flex items-center">
+                            <p class="mt-1.5 text-sm text-red-600 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -234,12 +236,13 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
-                            <input id="password" name="password" type="password" required
-                                class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-gray-50 hover:bg-white"
+                            <input id="password" name="password" type="password" required x-bind:disabled="loading"
+                                x-model="formData.password"
+                                class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-gray-50 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="••••••••">
                         </div>
                         @error('password')
-                            <p class="mt-1.5 text-sm text-emerald-600 flex items-center">
+                            <p class="mt-1.5 text-sm text-red-600 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -250,9 +253,9 @@
                         @enderror
                     </div>
 
-
-                    <button type="submit"
-                        class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3.5 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transform hover:-translate-y-0.5 transition-all duration-200">
+                    <!-- Botón de acceso -->
+                    <button type="submit" x-bind:disabled="loading"
+                        class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3.5 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-emerald-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
                         <span class="flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -262,8 +265,6 @@
                         </span>
                     </button>
                 </form>
-
-
             </div>
 
             <!-- Footer -->
@@ -275,27 +276,76 @@
                             clip-rule="evenodd" />
                     </svg>
                     © {{ date('Y') }} Dr. Joan - Sistema de Gestión Médica. Todos los derechos reservados.
-
                 </p>
             </div>
         </div>
-    </div>
-    <script>
-        < script >
-            function loginForm() {
-                return {
-                    loading: false,
-                    submitLogin() {
-                        this.loading = true;
 
-                        // pequeña espera visual para mostrar el loader
-                        setTimeout(() => {
-                            document.getElementById('loginForm').submit();
-                        }, 300);
+        <!-- Componente Loading (IMPORTANTE: Debe estar dentro del div con x-data) -->
+        <x-loading message="Validando tus credenciales..." spinner="medical" size="large" />
+    </div>
+
+    <script>
+        function loginForm() {
+            return {
+                loading: false,
+                errorMessage: '',
+                successMessage: '',
+                errors: {},
+                formData: {
+                    email: '{{ old('email') }}',
+                    password: '',
+                    remember: false
+                },
+
+                async submitLogin() {
+                    // Limpiar mensajes previos
+                    this.errorMessage = '';
+                    this.successMessage = '';
+                    this.errors = {};
+                    this.loading = true;
+
+                    try {
+                        const response = await fetch('{{ route('login') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(this.formData)
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            // Login exitoso
+                            this.successMessage = 'Redirigiendo al sistema...';
+
+                            // Redirigir después de 1 segundo
+                            setTimeout(() => {
+                                window.location.href = data.redirect || '{{ route('dashboard') }}';
+                            }, 1000);
+                        } else {
+                            // Error de validación
+                            if (data.errors) {
+                                this.errors = data.errors;
+                                // Mostrar primer error como mensaje general
+                                const firstError = Object.values(data.errors)[0];
+                                this.errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+                            } else {
+                                this.errorMessage = data.message || 'Las credenciales son incorrectas.';
+                            }
+                            this.loading = false;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        this.errorMessage =
+                        'Ocurrió un error al conectar con el servidor. Por favor, intenta de nuevo.';
+                        this.loading = false;
                     }
                 }
             }
-    </script>
+        }
     </script>
 </body>
 

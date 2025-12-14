@@ -1,11 +1,9 @@
 <!-- Loading Component - resources/views/components/loading.blade.php -->
 
 @props([
-    'show' => false,
     'message' => 'Cargando...',
-    'size' => 'medium', // small, medium, large
-    'overlay' => true,
-    'spinner' => 'medical' // medical, dots, pulse, spinner
+    'size' => 'medium',
+    'spinner' => 'medical'
 ])
 
 @php
@@ -18,34 +16,28 @@
 @endphp
 
 <div
-    x-data="{ show: @js($show) }"
-    x-show="show"
+    x-show="loading"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    @if($overlay)
     class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm"
-    @else
-    class="flex items-center justify-center p-4"
-    @endif
     style="display: none;"
 >
     <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform">
         <div class="flex flex-col items-center space-y-4">
+
             <!-- Spinner Médico (Cruz médica rotando) -->
             @if($spinner === 'medical')
                 <div class="relative {{ $sizeClass }}">
-                    <svg class="animate-spin text-emerald-600" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M13 3h-2v8h8v-2h-6V3z"/>
-                        <path d="M11 13H3v2h6v6h2v-8z"/>
-                        <path d="M21 13h-6v8h2v-6h4v-2z"/>
-                        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                    <svg class="animate-spin text-emerald-600" viewBox="0 0 50 50" fill="currentColor">
+                        <path d="M25 5 L25 20 M25 30 L25 45 M5 25 L20 25 M30 25 L45 25" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="25" cy="25" r="3" fill="currentColor"/>
                     </svg>
-                    <svg class="absolute inset-0 animate-ping text-emerald-300 opacity-75" viewBox="0 0 24 24" fill="currentColor">
-                        <circle cx="12" cy="12" r="10"/>
+                    <svg class="absolute inset-0 animate-ping text-emerald-300 opacity-75" viewBox="0 0 50 50" fill="currentColor">
+                        <circle cx="25" cy="25" r="20"/>
                     </svg>
                 </div>
 
@@ -60,7 +52,7 @@
             <!-- Pulse (Corazón latiendo) -->
             @elseif($spinner === 'pulse')
                 <div class="relative {{ $sizeClass }}">
-                    <svg class="text-emerald-600 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="text-red-600 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 </div>
@@ -83,7 +75,7 @@
                 </div>
             @endif
 
-            <!-- Barra de progreso animada (opcional) -->
+            <!-- Barra de progreso animada -->
             <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full animate-loading-bar"></div>
             </div>
