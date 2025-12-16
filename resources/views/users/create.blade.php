@@ -1,8 +1,8 @@
-@extends('layouts.users')
+@extends('layouts.forms')
 
-@section('title', 'Crear Usuario')
+@section('title', 'Crear Formulario')
 
-@section('users_content')
+@section('form_content')
 <div class="max-w-xl mx-auto p-6 bg-white rounded-lg shadow">
     <h1 class="text-xl font-semibold mb-6">Crear usuario</h1>
 

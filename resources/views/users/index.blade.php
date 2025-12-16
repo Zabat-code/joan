@@ -58,15 +58,6 @@
     </div>
 </div>
 @endsection
-
-
-{{--
-    Añade un script *específico* para esta vista (index.blade.php).
-    Se inyectará al final, DENTRO de @stack('scripts').
---}}
 @push('scripts')
-    <script>
-
-    </script>
-    <script src="/js/users/listado.js"></script> {{-- Otro archivo JS --}}
+    <script src="/js/users/list.js"></script>
 @endpush

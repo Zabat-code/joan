@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js' ])
     <title>@yield('title', 'Dr. Joan')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="hhttps://cdn.datatables.net/2.3.5/css/dataTables.tailwindcss.css">
     @stack('styles') {{-- Para estilos específicos de un módulo/vista --}}
 
     <style>
@@ -159,8 +160,6 @@
     </div>
     <div class="flex h-screen overflow-hidden">
 
-
-        <!-- menu -->
         <aside id="sidebar" class="sidebar-transition bg-gray-900 text-white w-64 flex-shrink-0 overflow-y-auto">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-center mb-8">
@@ -180,10 +179,10 @@
                         <span class="ml-3">Usuarios</span>
                     </a>
 
-                    <a href="{{ route('settings') }}"
+                    <a href="{{ route('forms') }}"
                         class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 {{ request()->routeIs('settings*') ? 'bg-gray-800' : '' }}">
-                        <i class="fas fa-cog w-6"></i>
-                        <span class="ml-3">Configuración</span>
+                       <i class="fa-solid fa-align-justify"></i>
+                        <span class="ml-3">Formularios</span>
                     </a>
                 </nav>
             </div>
@@ -322,6 +321,9 @@
                 sidebar.classList.add('-translate-x-full', 'fixed', 'z-20', 'h-full');
             }
         });
+    </script>
+    <script>
+        var BASE_URL = "{{ url('/') }}";
     </script>
     @stack('scripts') {{-- Importante: Aquí se inyectarán tus scripts específicos por módulo --}}
 </body>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FormsController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login.init');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::prefix('dashboard')->group(function () {
@@ -32,8 +33,15 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
-    Route::prefix('settings')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('settings');
+    Route::prefix('forms')->group(function () {
+        Route::get('/', [FormsController::class, 'index'])->name('forms');
+        Route::get('/create', [FormsController::class, 'create'])->name('forms.create');
+        Route::get('/builder', [FormsController::class, 'builder'])->name('forms.builder');
+        Route::post('/builder', [FormsController::class, 'storeBuilder'])->name('forms.builder.store');
+        Route::get('/list', [FormsController::class, 'list'])->name('forms.list');
+        // Formulario dinámico: mostrar y guardar respuestas
+        Route::get('/dynamic/{id}', [FormsController::class, 'dynamic'])->name('forms.dynamic');
+        Route::post('/dynamic/{id}', [FormsController::class, 'storeDynamic'])->name('forms.dynamic.store');
     });
 
     Route::get('/logout', [DashboardController::class, 'index'])->name('logout');
