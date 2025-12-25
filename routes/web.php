@@ -39,9 +39,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/builder', [FormsController::class, 'builder'])->name('forms.builder');
         Route::post('/builder', [FormsController::class, 'storeBuilder'])->name('forms.builder.store');
         Route::get('/list', [FormsController::class, 'list'])->name('forms.list');
-        // Formulario dinámico: mostrar y guardar respuestas
         Route::get('/dynamic/{id}', [FormsController::class, 'dynamic'])->name('forms.dynamic');
         Route::post('/dynamic/{id}', [FormsController::class, 'storeDynamic'])->name('forms.dynamic.store');
+        Route::delete('/dynamic/{id}', [FormsController::class, 'deleteDynamic'])->name('forms.dynamic.delete');
     });
 
     Route::get('/logout', [DashboardController::class, 'index'])->name('logout');

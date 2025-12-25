@@ -54,10 +54,10 @@ window.onload =  function() {
 
             // Paginación: destacar página activa y botones
             paginate.find('a').removeClass('bg-emerald-600 text-white border-gray-300');
-            paginate.find('a').addClass('px-3 py-1 border rounded bg-white text-gray-700');
+            paginate.find('a').addClass(' px-3 py-1 border rounded bg-white text-gray-700');
             paginate.find('.paginate_button.current, .paginate_button.active').each(function () {
-                $(this).removeClass('bg-white text-gray-700');
-                $(this).addClass('bg-emerald-600 text-white border-emerald-600');
+                $(this).removeClass('bg-white text-gray-700 ');
+                $(this).addClass('bg-emerald-600 text-white border-emerald-600  ');
             });
         },
         language: {

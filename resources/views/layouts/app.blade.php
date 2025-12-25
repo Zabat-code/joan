@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/app.css', 'resources/js/app.js' ])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>@yield('title', 'Dr. Joan')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="hhttps://cdn.datatables.net/2.3.5/css/dataTables.tailwindcss.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.tailwindcss.css">
     @stack('styles') {{-- Para estilos específicos de un módulo/vista --}}
 
     <style>
@@ -163,7 +163,7 @@
         <aside id="sidebar" class="sidebar-transition bg-gray-900 text-white w-64 flex-shrink-0 overflow-y-auto">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-center mb-8">
-                    {{ auth()->user()->name ?? 'Admin'  }}
+                    {{ auth()->user()->name ?? 'Admin' }}
                 </h1>
 
                 <nav class="space-y-2">
@@ -180,10 +180,23 @@
                     </a>
 
                     <a href="{{ route('forms') }}"
-                        class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 {{ request()->routeIs('settings*') ? 'bg-gray-800' : '' }}">
-                       <i class="fa-solid fa-align-justify"></i>
+                        class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 {{ request()->routeIs('forms*') ? 'bg-gray-800' : '' }}">
+                        <i class="fa-solid fa-align-justify"></i>
                         <span class="ml-3">Formularios</span>
                     </a>
+
+                    @if (!empty($menuDynamic))
+                        <div class="ml-6 mt-2 space-y-1">
+                            @foreach ($menuDynamic as $item)
+                                <a href="{{ route('forms.dynamic', $item->id_document_header) }}"
+                                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                                    <i class="fa-solid fa-circle-notch w-3 text-xs"></i>
+                                    <span class="ml-3">{{ $item->name }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+
                 </nav>
             </div>
 
@@ -200,87 +213,89 @@
         </aside>
         <div class="flex-1 flex flex-col overflow-hidden">
 
-        <!-- Top Navigation -->
-        <header class="bg-white shadow-sm z-10">
-            <div class="flex items-center justify-between px-6 py-4">
-                <button id="sidebarToggle" class="text-gray-600 hover:text-gray-900 lg:hidden">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-
-                <h2 class="text-xl font-semibold text-gray-800 hidden sm:block">
-                    @yield('title', 'Dashboard')
-                </h2>
-
-                <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <button class="relative text-gray-600 hover:text-gray-900">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span
-                            class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <button id="sidebarToggle" class="text-gray-600 hover:text-gray-900 lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
 
-                    <!-- User Menu -->
-                    <div class="relative">
-                        <button id="userMenuButton"
-                            class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                            <img src="https://ui-avatars.com/api/?name={{ auth()->user()->name ?? 'Admin' }}&background=random"
-                                alt="Avatar" class="w-8 h-8 rounded-full">
-                            <span class="hidden md:block">{{ auth()->user()->name ?? 'Admin' }}</span>
-                            <i class="fas fa-chevron-down text-sm"></i>
+                    <h2 class="text-xl font-semibold text-gray-800 hidden sm:block">
+                        @yield('title', 'Dashboard')
+                    </h2>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <button class="relative text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span
+                                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
                         </button>
 
-                        <div id="userMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
-                            <a href="{{ route('profile') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-user mr-2"></i> Mi Perfil
-                            </a>
-                            <a href="{{ route('settings') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-cog mr-2"></i> Configuración
-                            </a>
-                            <hr class="my-2">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full text-left block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                    <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
-                                </button>
-                            </form>
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button id="userMenuButton"
+                                class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                                <img src="https://ui-avatars.com/api/?name={{ auth()->user()->name ?? 'Admin' }}&background=random"
+                                    alt="Avatar" class="w-8 h-8 rounded-full">
+                                <span class="hidden md:block">{{ auth()->user()->name ?? 'Admin' }}</span>
+                                <i class="fas fa-chevron-down text-sm"></i>
+                            </button>
+
+                            <div id="userMenu"
+                                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
+                                <a href="{{ route('profile') }}"
+                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i> Mi Perfil
+                                </a>
+                                <a href="{{ route('settings') }}"
+                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i> Configuración
+                                </a>
+                                <hr class="my-2">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-left block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
 
-        <main class="flex-1 overflow-y-auto p-6">
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 relative"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                    <button onclick="this.parentElement.style.display='none'"
-                        class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            @endif
+            <main class="flex-1 overflow-y-auto p-6">
+                @if (session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 relative"
+                        role="alert">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                        <button onclick="this.parentElement.style.display='none'"
+                            class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                @endif
 
-            @if (session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                    <button onclick="this.parentElement.style.display='none'"
-                        class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            @endif
+                @if (session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative"
+                        role="alert">
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                        <button onclick="this.parentElement.style.display='none'"
+                            class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                @endif
 
-            @yield('content')
-        </main>
+                @yield('content')
+            </main>
 
-        <footer>
-        </footer>
-    </div>
+            <footer>
+            </footer>
+        </div>
     </div>
 
     <script>

@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentHeaderModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    private $MenuDynamic;
+
+    public function __construct()
+    {
+        $this->MenuDynamic = DocumentHeaderModel::all();
+    }
     public function index()
     {
         $users = UserModel::all();
-        return view('users.index',compact('users'));
+        return view('users.index',compact('users' ) ,  ['menuDynamic' =>$this->MenuDynamic]);
     }
     public function create()
     {
-        return view('users.create');
+        return view('users.create',compact('users' ),['menuDynamic' =>$this->MenuDynamic] );
     }
 
     public function store(Request $request)
@@ -38,7 +45,7 @@ class UserController extends Controller
 
     public function edit(UserModel $user)
     {
-        return view('users.edit', compact('user'));
+        return view('users.edit', compact('user'), ['menuDynamic' =>$this->MenuDynamic]);
     }
 
     public function update(Request $request, UserModel $user)

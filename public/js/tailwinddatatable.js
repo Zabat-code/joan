@@ -1,6 +1,6 @@
 /*! DataTables Tailwind CSS integration
  */
-
+document.addEventListener('DOMContentLoaded', function () {
 (function( factory ){
 	if ( typeof define === 'function' && define.amd ) {
 		// AMD
@@ -159,3 +159,4 @@ DataTable.ext.renderer.layout.tailwindcss = function ( settings, container, item
 
 return DataTable;
 }));
+});

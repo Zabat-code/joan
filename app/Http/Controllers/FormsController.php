@@ -10,33 +10,43 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FormsController extends Controller
 {
+    private $MenuDynamic;
+
+    public function __construct()
+    {
+        $this->MenuDynamic = DocumentHeaderModel::all();
+    }
     public function index()
     {
-        return view('forms.index');
+        return view('forms.index', ['menuDynamic' => $this->MenuDynamic]);
     }
+
+    public function create()
+    {
+        return view('forms.builder', ['menuDynamic' => $this->MenuDynamic]);
+    }
+
     public function list()
     {
         $list = DocumentHeaderModel::all();
         return DataTables::of($list)
-            ->addIndexColumn() // Opcional
-            ->addColumn('action', function($row){
-                // Usar clases de Tailwind para los botones
-                $btn = '<a href="javascript:void(0)" class="text-white bg-blue-600 hover:bg-blue-700 font-bold py-1 px-2 rounded text-xs mr-2">Editar</a>';
-                $btn .= ' <a href="javascript:void(0)" class="text-white bg-red-600 hover:bg-red-700 font-bold py-1 px-2 rounded text-xs">Eliminar</a>';
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = '<a href="' . route('forms.dynamic', $row->id_document_header) . '" class="text-white bg-blue-600 hover:bg-blue-700 font-bold py-2 px-3 rounded text-xs mr-2">Editar</a>';
+
+                $deleteAction = route('forms.dynamic.delete', $row->id_document_header);
+                $csrf = csrf_token();
+                $btn .= '<form method="POST" action="' . $deleteAction . '" style="display:inline-block;margin:0;" onsubmit="return confirm(\'¿Seguro que desea eliminar este formulario?\')">';
+                $btn .= '<input type="hidden" name="_token" value="' . $csrf . '">';
+                $btn .= '<input type="hidden" name="_method" value="DELETE">';
+                $btn .= '<button type="submit" class="text-white bg-red-600 hover:bg-red-700 font-bold py-2 px-3 rounded text-xs">Eliminar</button>';
+                $btn .= '</form>';
                 return $btn;
             })
             ->rawColumns(['action'])
             ->make(true);
     }
 
-
-    // Mostrar el builder de plantillas
-    public function create()
-    {
-        return view('forms.builder');
-    }
-
-    // Guardar plantilla (DocumentHeader + DocumentBody records)
     public function storeBuilder(Request $request)
     {
         $data = $request->validate([
@@ -65,7 +75,7 @@ class FormsController extends Controller
             $prepared[] = $f;
         }
 
-        usort($prepared, function($a, $b){
+        usort($prepared, function ($a, $b) {
             return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
         });
 
@@ -73,7 +83,7 @@ class FormsController extends Controller
             $typeKey = strtolower($f['type'] ?? 'text');
             $typeCode = $typeMap[$typeKey] ?? 1;
             $formatType = isset($f['format_type']) ? (int)$f['format_type'] : (
-                in_array($typeKey, ['select','checkbox']) ? 1 : 0
+                in_array($typeKey, ['select', 'checkbox']) ? 1 : 0
             );
 
             DocumentBodyModel::create([
@@ -91,14 +101,15 @@ class FormsController extends Controller
         return redirect()->route('forms')->with('success', 'Plantilla creada correctamente');
     }
 
-    // Mostrar formulario dinámico basado en header y sus bodys
     public function dynamic($id)
     {
-        $header = DocumentHeaderModel::with(['bodys' => function($q){ $q->orderBy('order'); }])->findOrFail($id);
-        return view('forms.dynamic', compact('header'));
+        $MenuDynamic = $this->MenuDynamic;
+        $header = DocumentHeaderModel::with(['bodys' => function ($q) {
+            $q->orderBy('order');
+        }])->findOrFail($id);
+        return view('forms.dynamic', compact('header'), ['menuDynamic' => $MenuDynamic]);
     }
 
-    // Guardar valores del formulario dinámico
     public function storeDynamic(Request $request, $id)
     {
         $header = DocumentHeaderModel::with('bodys')->findOrFail($id);
@@ -106,7 +117,7 @@ class FormsController extends Controller
         $saved = [];
         $order = 1;
         foreach ($header->bodys as $body) {
-            $fieldName = 'field_'.$body->id_document_body;
+            $fieldName = 'field_' . $body->id_document_body;
             $value = $request->input($fieldName);
 
             // Normalizar valor para inputs como checkbox (array) y others
@@ -127,5 +138,16 @@ class FormsController extends Controller
         }
 
         return redirect()->route('forms')->with('success', 'Formulario guardado correctamente');
+    }
+
+    public function deleteDynamic($id)
+    {
+        $header = DocumentHeaderModel::findOrFail($id);
+        foreach ($header->bodys as $body) {
+            DocumentValueModel::where('id_document_body', $body->id_document_body)->delete();
+            $body->delete();
+        }
+        $header->delete();
+        return redirect()->route('forms')->with('success', 'Formulario eliminado correctamente');
     }
 }
