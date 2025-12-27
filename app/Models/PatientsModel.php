@@ -9,18 +9,22 @@ class PatientsModel extends Model
 {
     use HasFactory;
     protected $table = 'patients';
+    protected $primaryKey = 'id_patient';
+    public $incrementing = true;
     protected $fillable = [
-        'name',
-        'born_date',
-        'sex',
-        'address',
-        'id_insurances',
-        'type_identification',
+        'photo_path',
         'identification',
-        'telephone',
+        'first_name',
+        'last_name',
+        'birth_date',
+        'gender',
+        'phone',
         'cellphone',
         'email',
-        'state',
+        'insurance',
+        'insurance_number',
+        'address',
+        'observations',
     ];
     public function insurance()
     {

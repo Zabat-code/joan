@@ -10,20 +10,16 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FormsController extends Controller
 {
-    private $MenuDynamic;
 
-    public function __construct()
-    {
-        $this->MenuDynamic = DocumentHeaderModel::all();
-    }
+    public function __construct() {}
     public function index()
     {
-        return view('forms.index', ['menuDynamic' => $this->MenuDynamic]);
+        return view('forms.index');
     }
 
     public function create()
     {
-        return view('forms.builder', ['menuDynamic' => $this->MenuDynamic]);
+        return view('forms.builder');
     }
 
     public function list()
@@ -103,11 +99,10 @@ class FormsController extends Controller
 
     public function dynamic($id)
     {
-        $MenuDynamic = $this->MenuDynamic;
         $header = DocumentHeaderModel::with(['bodys' => function ($q) {
             $q->orderBy('order');
         }])->findOrFail($id);
-        return view('forms.dynamic', compact('header'), ['menuDynamic' => $MenuDynamic]);
+        return view('forms.dynamic', compact('header'));
     }
 
     public function storeDynamic(Request $request, $id)

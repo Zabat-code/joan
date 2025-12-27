@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FormsController;
+use App\Http\Controllers\InsurancesController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\UserController;
@@ -26,6 +27,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    });
+     Route::prefix('insurances')->group(function () {
+        Route::get('/', [InsurancesController::class, 'list'])->name('insurances.list');
     });
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users');

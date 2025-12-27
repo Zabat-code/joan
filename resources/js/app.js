@@ -6,3 +6,7 @@ window.$ = window.jQuery = jQuery;
 import DataTable from 'datatables.net';
 import 'datatables.net-dt';
 window.DataTable = DataTable;
+
+// Export jQuery so other modules can import it if needed
+export default jQuery;
+export { jQuery as $ };

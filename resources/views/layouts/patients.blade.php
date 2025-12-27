@@ -7,5 +7,3 @@
         </section>
     </div>
 @endsection
-@push('scripts')
-@endpush
