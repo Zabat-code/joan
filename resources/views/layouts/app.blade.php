@@ -63,24 +63,28 @@
         }
 
         .icon-1 {
+            z-index: -1;
             top: 8%;
             left: 12%;
             animation: float 8s ease-in-out infinite;
         }
 
         .icon-2 {
+            z-index: -1;
             top: 15%;
             right: 10%;
             animation: float-slow 10s ease-in-out infinite;
         }
 
         .icon-3 {
+            z-index: -1;
             bottom: 20%;
             left: 8%;
             animation: pulse-slow 7s ease-in-out infinite;
         }
 
         .icon-4 {
+            z-index: -1;
             bottom: 25%;
             right: 15%;
             animation: float 9s ease-in-out infinite 1s;
@@ -94,6 +98,7 @@
         }
 
         .icon-6 {
+            z-index: -1;
             top: 35%;
             right: 8%;
             animation: pulse-slow 8s ease-in-out infinite 1.5s;
@@ -116,7 +121,7 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen relative overflow-hidden">
+<body style="z-index: -2" class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen relative overflow-hidden">
     <div class="medical-icon icon-1">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
             <path
@@ -184,18 +189,11 @@
                         <i class="fa-solid fa-align-justify"></i>
                         <span class="ml-3">Formularios</span>
                     </a>
-
-                    @if (!empty($menuDynamic))
-                        <div class="ml-6 mt-2 space-y-1">
-                            @foreach ($menuDynamic as $item)
-                                <a href="{{ route('forms.dynamic', $item->id_document_header) }}"
-                                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
-                                    <i class="fa-solid fa-circle-notch w-3 text-xs"></i>
-                                    <span class="ml-3">{{ $item->name }}</span>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
+                    <a href="{{ route('patients') }}"
+                        class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 {{ request()->routeIs('patients*') ? 'bg-gray-800' : '' }}">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="ml-3">Pacientes</span>
+                    </a>
 
                 </nav>
             </div>
